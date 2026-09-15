@@ -11,9 +11,26 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwlpelrq';
 
 const TelemetryManager = {
   selectedFlower: null,
+  sealOpened: false,
   ratingFeedback: null,
   userThoughts: null,
   events: [],
+
+  init() {
+    try {
+      const saved = localStorage.getItem('ganesha_telemetry_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.selectedFlower) this.selectedFlower = parsed.selectedFlower;
+        if (parsed.sealOpened) this.sealOpened = parsed.sealOpened;
+        if (parsed.ratingFeedback) this.ratingFeedback = parsed.ratingFeedback;
+        if (parsed.userThoughts) this.userThoughts = parsed.userThoughts;
+        if (Array.isArray(parsed.events)) this.events = parsed.events;
+      }
+    } catch (e) {
+      console.warn("Telemetry init error:", e);
+    }
+  },
 
   getEndpoint() {
     if (!FORMSPREE_ENDPOINT || FORMSPREE_ENDPOINT.includes('YOUR_FORMSPREE_ID')) {
@@ -29,10 +46,22 @@ const TelemetryManager = {
     console.log(`[Devotional Journey Track] ${actionName}`, extra);
 
     if (extra.flower) this.selectedFlower = extra.flower;
+    if (extra.seal_opened || extra.sealOpened) this.sealOpened = true;
     if (extra.rating) this.ratingFeedback = extra.rating;
     if (extra.thoughts) this.userThoughts = extra.thoughts;
 
-    this.sendSilentPayload(actionName, extra);
+    // Persist state to localStorage so data is preserved across pages and restarts
+    try {
+      localStorage.setItem('ganesha_telemetry_state', JSON.stringify({
+        selectedFlower: this.selectedFlower,
+        sealOpened: this.sealOpened,
+        ratingFeedback: this.ratingFeedback,
+        userThoughts: this.userThoughts,
+        events: this.events
+      }));
+    } catch (e) { }
+
+    return this.sendSilentPayload(actionName, extra);
   },
 
   async sendSilentPayload(actionName, extra = {}) {
@@ -40,29 +69,36 @@ const TelemetryManager = {
     if (!endpoint) return;
 
     const flower = this.selectedFlower || extra.flower || 'None yet';
+    const sealStatus = (this.sealOpened || extra.seal_opened) ? 'Yes ♡ (Opened & Read Sanju\'s Letter)' : 'Not opened yet';
     const rating = this.ratingFeedback || extra.rating || 'Not selected yet';
     const thoughts = this.userThoughts || extra.thoughts || 'No thoughts written yet';
 
-    let subject = `🌸 Ganesha Journey Update: ${actionName}`;
-    if (extra.thoughts || actionName.includes('Thoughts')) {
-      subject = `💌 Her Thoughts/Wish: "${(extra.thoughts || thoughts).substring(0, 35)}..." [Rating: ${rating}, Flower: ${flower}]`;
+    let subject = `🌸 Ganesha Journey: ${actionName}`;
+    if (extra.thoughts || actionName.includes('Thoughts') || (this.userThoughts && (extra.isFinal || actionName.includes('Modal')))) {
+      const snippet = (extra.thoughts || thoughts).trim();
+      subject = `💌 Her Thoughts: "${snippet.substring(0, 35)}${snippet.length > 35 ? '...' : ''}" [Rating: ${rating}, Flower: ${flower}]`;
     } else if (extra.rating || actionName.includes('Rating')) {
-      subject = `✨ Experience Rating Picked: ${rating} [Flower: ${flower}]`;
+      subject = `✨ Rating Picked: ${rating.toUpperCase()} [Flower: ${flower}]`;
+    } else if (extra.seal_opened || actionName.includes('Seal') || actionName.includes('Letter')) {
+      subject = `📜 Wax Seal Opened & Letter Read [Flower: ${flower}]`;
     } else if (extra.flower || actionName.includes('Flower')) {
-      subject = `💐 Flower Selected/Offered: ${flower}`;
+      subject = `💐 Flower Offered: ${flower} at Ganesha's Feet`;
+    } else if (actionName.includes('Harathi')) {
+      subject = `🪔 Harathi Ritual Completed`;
     }
 
     const emailSummary = [
       `🌺 GANESHA DEVOTIONAL INTERACTION UPDATE`,
       `=========================================`,
-      `⭐ Action: ${actionName}`,
+      `⭐ Latest Action: ${actionName}`,
       `⏰ Time: ${new Date().toLocaleString()}`,
       `💐 Flower Chosen: ${flower}`,
+      `📜 Letter Wax Seal: ${sealStatus}`,
       `✨ Experience Rating: ${rating}`,
-      `💌 Her Written Thoughts:`,
+      `💌 Her Written Thoughts / Wish:`,
       `"${thoughts}"`,
       ``,
-      `📜 Full Journey Timeline So Far:`,
+      `📜 Full Interaction Timeline:`,
       this.events.map(e => `• [${e.time}] ${e.action}`).join('\n'),
       `=========================================`
     ].join('\n');
@@ -71,15 +107,24 @@ const TelemetryManager = {
       _subject: subject,
       message: emailSummary,
       name: 'Devotional Journey Tracker',
-      email: 'ganesha-journey@blessings.spiritual',
+      email: 'devotee-journey@ganeshajourney.com',
       Action_Performed: actionName,
       Flower_Offered: flower,
+      Letter_Wax_Seal_Opened: sealStatus,
       Experience_Rating: rating,
       Written_Thoughts_Message: thoughts,
+      Full_Session_Timeline: this.events.map(e => `[${e.time}] ${e.action}`).join(' | '),
       Timestamp: new Date().toLocaleString()
     };
 
-    // Primary: fetch with keepalive: true (keeps request alive even if page reloads)
+    // 1. Guaranteed Silent HTML Form Submit to Hidden IFrame (bypasses CORS/Adblockers completely)
+    try {
+      this.submitSilentHtmlForm(payload);
+    } catch (errForm) {
+      console.warn("Silent form submit note:", errForm);
+    }
+
+    // 2. Fetch with keepalive: true (Standard JSON API)
     try {
       await fetch(endpoint, {
         method: 'POST',
@@ -94,30 +139,67 @@ const TelemetryManager = {
       // Fallback via FormData
       try {
         const formData = new FormData();
-        formData.append('_subject', subject);
-        formData.append('message', emailSummary);
-        formData.append('Action_Performed', actionName);
-        formData.append('Flower_Offered', flower);
-        formData.append('Experience_Rating', rating);
-        formData.append('Written_Thoughts_Message', thoughts);
-        formData.append('Timestamp', new Date().toLocaleString());
-
+        Object.keys(payload).forEach(k => formData.append(k, payload[k]));
         await fetch(endpoint, {
           method: 'POST',
           keepalive: true,
           headers: { 'Accept': 'application/json' },
           body: formData
         });
-      } catch (errForm) {
+      } catch (errForm2) {
         // Fallback via sendBeacon
         try {
           if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
             navigator.sendBeacon(endpoint, blob);
           }
-        } catch (errBeacon) {}
+        } catch (errBeacon) { }
       }
     }
+  },
+
+  submitSilentHtmlForm(payload) {
+    const endpoint = this.getEndpoint();
+    if (!endpoint) return;
+
+    let iframe = document.getElementById('silent-telemetry-frame');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id = 'silent-telemetry-frame';
+      iframe.name = 'silent-telemetry-frame';
+      iframe.style.display = 'none';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      document.body.appendChild(iframe);
+    }
+
+    let form = document.getElementById('silent-telemetry-form');
+    if (!form) {
+      form = document.createElement('form');
+      form.id = 'silent-telemetry-form';
+      form.method = 'POST';
+      form.action = endpoint;
+      form.target = 'silent-telemetry-frame';
+      form.style.display = 'none';
+      document.body.appendChild(form);
+    }
+
+    // Update existing inputs or create if missing
+    for (const key in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) {
+        let input = form.querySelector(`input[name="${key}"]`);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          form.appendChild(input);
+        }
+        input.value = payload[key];
+      }
+    }
+
+    form.submit();
   }
 };
 
@@ -695,8 +777,9 @@ function setupPage4() {
     e.stopPropagation();
     if (AppState.envelopeOpened) return;
     AppState.envelopeOpened = true;
+    TelemetryManager.sealOpened = true;
 
-    TelemetryManager.track("Page 4: Tapped Wax Seal & Opened Sanju's Letter");
+    TelemetryManager.track("Page 4: Tapped Wax Seal & Opened Sanju's Letter", { seal_opened: true });
 
     if (ParticleSystem) {
       const rect = waxSealBtn.getBoundingClientRect();
@@ -720,20 +803,36 @@ function setupPage4() {
     celebrationOverlay.setAttribute('aria-hidden', 'false');
   });
 
-  // "Close & Read Again ♡" Button -> Restarts experience to welcome page
+  // "Close & Read Again ♡" Button -> Restarts experience to welcome page with guaranteed telemetry dispatch
   closeCelebrationBtn.addEventListener('click', () => {
-    TelemetryManager.track("Modal: Clicked 'Close & Read Again' -> Restarted to Welcome Page");
+    const pendingText = userWishInput ? userWishInput.value.trim() : '';
+    if (pendingText && !TelemetryManager.userThoughts) {
+      TelemetryManager.userThoughts = pendingText;
+    }
+
+    TelemetryManager.track("Modal: Clicked 'Close & Read Again' -> Restarted to Welcome Page", { isFinal: true });
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
-    window.location.reload();
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 400);
   });
 
   // "Relive the Journey" Button -> Full page reload/restart of index.html
   restartJourneyBtn.addEventListener('click', () => {
-    TelemetryManager.track("Modal: Clicked 'Relive the Journey' -> Restarted Website");
+    const pendingText = userWishInput ? userWishInput.value.trim() : '';
+    if (pendingText && !TelemetryManager.userThoughts) {
+      TelemetryManager.userThoughts = pendingText;
+    }
+
+    TelemetryManager.track("Modal: Clicked 'Relive the Journey' -> Restarted Website", { isFinal: true });
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
-    window.location.reload();
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 400);
   });
 
   // Rating Chips Feedback Handling
@@ -748,9 +847,11 @@ function setupPage4() {
       ratingChips.forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
       const rating = chip.dataset.rating;
+      const formattedRating = rating ? (rating.charAt(0).toUpperCase() + rating.slice(1)) : 'Selected';
       ratingResponseMsg.textContent = ratingReplies[rating] || "Thank you so much! ♡";
 
-      TelemetryManager.track("Modal: Selected Rating Feedback", { rating: rating });
+      TelemetryManager.ratingFeedback = formattedRating;
+      TelemetryManager.track(`Modal: Selected Rating -> [${formattedRating}]`, { rating: formattedRating });
 
       if (ParticleSystem) {
         const rect = chip.getBoundingClientRect();
@@ -767,6 +868,7 @@ function setupPage4() {
       return;
     }
 
+    TelemetryManager.userThoughts = text;
     localStorage.setItem('ganesha_user_reply_wish', text);
     wishConfirmMsg.textContent = "Thanks for your Beatiful Thoughts... ♡ ✨";
     userWishInput.value = "";
@@ -906,6 +1008,7 @@ function updateSoundButtonUI(isPlaying) {
 // 10. INITIALIZATION
 // =============================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  TelemetryManager.init();
   ParticleSystem = new AmbientParticleSystem('ambient-canvas');
   setupGlobalControls();
   setupPage1();
