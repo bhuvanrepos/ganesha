@@ -6,8 +6,10 @@
 
 // =============================================================================
 // 0. FORMSPREE CONFIGURATION (Silent Telemetry to Email)
+// Main Journey Endpoint: xwlpelrq | Dedicated Hover/Modal Endpoint: mppwadza
 // =============================================================================
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwlpelrq';
+const FORMSPREE_ENDPOINT_MAIN = 'https://formspree.io/f/xwlpelrq';
+const FORMSPREE_ENDPOINT_HOVER = 'https://formspree.io/f/mppwadza';
 
 const TelemetryManager = {
   selectedFlower: null,
@@ -32,11 +34,21 @@ const TelemetryManager = {
     }
   },
 
-  getEndpoint() {
-    if (!FORMSPREE_ENDPOINT || FORMSPREE_ENDPOINT.includes('YOUR_FORMSPREE_ID')) {
-      return null;
-    }
-    return FORMSPREE_ENDPOINT.startsWith('http') ? FORMSPREE_ENDPOINT : `https://formspree.io/f/${FORMSPREE_ENDPOINT}`;
+  getEndpoint(actionName = '', extra = {}) {
+    const isHover = extra.isModal ||
+      extra.isHover ||
+      extra.rating ||
+      extra.thoughts ||
+      actionName.includes('Modal') ||
+      actionName.includes('Rating') ||
+      actionName.includes('Thoughts') ||
+      actionName.includes('Keep Smiling') ||
+      actionName.includes('Celebration') ||
+      actionName.includes('Close & Read Again') ||
+      actionName.includes('Relive the Journey') ||
+      actionName.includes('hover');
+
+    return isHover ? FORMSPREE_ENDPOINT_HOVER : FORMSPREE_ENDPOINT_MAIN;
   },
 
   track(actionName, extra = {}) {
@@ -65,7 +77,7 @@ const TelemetryManager = {
   },
 
   async sendSilentPayload(actionName, extra = {}) {
-    const endpoint = this.getEndpoint();
+    const endpoint = this.getEndpoint(actionName, extra);
     if (!endpoint) return;
 
     const flower = this.selectedFlower || extra.flower || 'None yet';
@@ -119,7 +131,7 @@ const TelemetryManager = {
 
     // 1. Guaranteed Silent HTML Form Submit to Hidden IFrame (bypasses CORS/Adblockers completely)
     try {
-      this.submitSilentHtmlForm(payload);
+      this.submitSilentHtmlForm(payload, endpoint);
     } catch (errForm) {
       console.warn("Silent form submit note:", errForm);
     }
@@ -158,8 +170,7 @@ const TelemetryManager = {
     }
   },
 
-  submitSilentHtmlForm(payload) {
-    const endpoint = this.getEndpoint();
+  submitSilentHtmlForm(payload, endpoint) {
     if (!endpoint) return;
 
     let iframe = document.getElementById('silent-telemetry-frame');
@@ -179,11 +190,12 @@ const TelemetryManager = {
       form = document.createElement('form');
       form.id = 'silent-telemetry-form';
       form.method = 'POST';
-      form.action = endpoint;
       form.target = 'silent-telemetry-frame';
       form.style.display = 'none';
       document.body.appendChild(form);
     }
+
+    form.action = endpoint;
 
     // Update existing inputs or create if missing
     for (const key in payload) {
