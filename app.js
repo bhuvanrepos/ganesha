@@ -120,10 +120,10 @@ class DivineAudioEngine {
   }
 
   // Click & synth audio removed per user request: only sound.mp3 plays
-  playTempleBell() {}
-  playFlameIgnite() {}
-  playFlowerChime() {}
-  playWaxSealOpen() {}
+  playTempleBell() { }
+  playFlameIgnite() { }
+  playFlowerChime() { }
+  playWaxSealOpen() { }
 }
 
 const AudioEngine = new DivineAudioEngine();
@@ -364,14 +364,14 @@ function setupPage1() {
     setTimeout(() => {
       AppState.harathiRitualDone = true;
 
-      p1PromptText.innerHTML = `<span class="prompt-title">Ganapayya Darshanam labhinchindi... ♡</span><br><span class="prompt-subtitle">Ganapayya meekosam oka maata chepthunnaru...</span>`;
+      p1PromptText.innerHTML = `<span class="prompt-title">Ganapayya Darshanam labhinchindi... ♡</span><br><span class="prompt-subtitle">Ganapayya neekosam oka maata cheptaru anta...</span>`;
       p1FooterSubtext.textContent = "Tap to view Ganapayya's Note ♡";
 
       harathiBtn.classList.remove('disabled');
       harathiBtn.classList.add('pulse-glow');
       harathiBtn.innerHTML = `
         <span class="btn-lamp-icon">🌸</span>
-        <span class="btn-text">Ganapayya Maata Vinandi</span>
+        <span class="btn-text">Ganapayya Maata Vinu(Ganesha's Note)</span>
         <span class="btn-arrow-icon">→</span>
       `;
     }, 4200);
@@ -639,7 +639,7 @@ function setupPage4() {
     }
 
     localStorage.setItem('ganesha_user_reply_wish', text);
-    wishConfirmMsg.textContent = "Mee manasulo maata Ganapayya daggara cherindi... ♡ ✨";
+    wishConfirmMsg.textContent = "Thanks for your Beatiful Thoughts... ♡ ✨";
     userWishInput.value = "";
 
     if (ParticleSystem) {

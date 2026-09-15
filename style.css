@@ -720,25 +720,44 @@ body {
 
 .parchment-body {
   font-family: var(--font-serif);
-  font-size: 0.76rem;
-  line-height: 1.36;
+  font-size: 0.77rem;
+  line-height: 1.38;
   text-align: left;
+  max-height: 175px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184, 144, 94, 0.6) transparent;
+}
+
+.parchment-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.parchment-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.parchment-body::-webkit-scrollbar-thumb {
+  background: rgba(184, 144, 94, 0.6);
+  border-radius: 4px;
 }
 
 .parchment-para {
-  margin-bottom: 3.5px;
+  margin-bottom: 5px;
   color: var(--parchment-ink);
 }
 
 .parchment-para.highlight-para {
-  margin-bottom: 3.5px;
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
 .signature-block {
   text-align: right;
-  margin-top: 0;
+  margin-top: 4px;
   font-family: var(--font-script);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   color: #523620;
 }
 
