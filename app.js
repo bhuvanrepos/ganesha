@@ -39,51 +39,50 @@ const TelemetryManager = {
     const endpoint = this.getEndpoint();
     if (!endpoint) return;
 
-    const flower = this.selectedFlower || 'None yet';
-    const rating = this.ratingFeedback || 'Not selected yet';
+    const flower = this.selectedFlower || extra.flower || 'None yet';
+    const rating = this.ratingFeedback || extra.rating || 'Not selected yet';
     const thoughts = this.userThoughts || extra.thoughts || 'No thoughts written yet';
-    const currentSite = window.location.href || 'https://ganeshahii.vercel.app/';
 
-    let subject = `🌸 [ganeshahii.vercel.app] ${actionName}`;
-    if (extra.thoughts) {
-      subject = `💌 New Wish/Thoughts from Her: "${extra.thoughts.substring(0, 35)}..." [Rating: ${rating}, Flower: ${flower}]`;
-    } else if (extra.rating) {
+    let subject = `🌸 Ganesha Journey Update: ${actionName}`;
+    if (extra.thoughts || actionName.includes('Thoughts')) {
+      subject = `💌 Her Thoughts/Wish: "${(extra.thoughts || thoughts).substring(0, 35)}..." [Rating: ${rating}, Flower: ${flower}]`;
+    } else if (extra.rating || actionName.includes('Rating')) {
       subject = `✨ Experience Rating Picked: ${rating} [Flower: ${flower}]`;
-    } else if (extra.flower) {
+    } else if (extra.flower || actionName.includes('Flower')) {
       subject = `💐 Flower Selected/Offered: ${flower}`;
     }
 
     const emailSummary = [
-      `🌺 GANESHA DEVOTIONAL INTERACTION SUMMARY`,
+      `🌺 GANESHA DEVOTIONAL INTERACTION UPDATE`,
       `=========================================`,
-      `🌐 Website: ${currentSite}`,
+      `⭐ Action: ${actionName}`,
+      `⏰ Time: ${new Date().toLocaleString()}`,
       `💐 Flower Chosen: ${flower}`,
-      `⭐ Experience Rating: ${rating}`,
+      `✨ Experience Rating: ${rating}`,
       `💌 Her Written Thoughts:`,
       `"${thoughts}"`,
       ``,
-      `🕒 Current Step: ${actionName}`,
-      `⏰ Timestamp: ${new Date().toLocaleString()}`,
-      `=========================================`,
-      `📜 Full Journey Timeline:`,
-      this.events.map(e => `• [${e.time}] ${e.action}`).join('\n')
+      `📜 Full Journey Timeline So Far:`,
+      this.events.map(e => `• [${e.time}] ${e.action}`).join('\n'),
+      `=========================================`
     ].join('\n');
 
     const payload = {
       _subject: subject,
       message: emailSummary,
-      Website_URL: currentSite,
+      name: 'Devotional Journey Tracker',
+      email: 'ganesha-journey@blessings.spiritual',
+      Action_Performed: actionName,
       Flower_Offered: flower,
       Experience_Rating: rating,
       Written_Thoughts_Message: thoughts,
-      Current_Action: actionName,
       Timestamp: new Date().toLocaleString()
     };
 
+    // Primary: fetch with keepalive: true (keeps request alive even if page reloads)
     try {
       await fetch(endpoint, {
         method: 'POST',
-        mode: 'cors',
         keepalive: true,
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +91,32 @@ const TelemetryManager = {
         body: JSON.stringify(payload)
       });
     } catch (err) {
-      // Fail silently without interrupting her experience
+      // Fallback via FormData
+      try {
+        const formData = new FormData();
+        formData.append('_subject', subject);
+        formData.append('message', emailSummary);
+        formData.append('Action_Performed', actionName);
+        formData.append('Flower_Offered', flower);
+        formData.append('Experience_Rating', rating);
+        formData.append('Written_Thoughts_Message', thoughts);
+        formData.append('Timestamp', new Date().toLocaleString());
+
+        await fetch(endpoint, {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Accept': 'application/json' },
+          body: formData
+        });
+      } catch (errForm) {
+        // Fallback via sendBeacon
+        try {
+          if (navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+            navigator.sendBeacon(endpoint, blob);
+          }
+        } catch (errBeacon) {}
+      }
     }
   }
 };
@@ -696,9 +720,9 @@ function setupPage4() {
     celebrationOverlay.setAttribute('aria-hidden', 'false');
   });
 
-  // "Close & Read Again ♡" Button -> Restarts to Page 1 just like Relive the Journey
+  // "Close & Read Again ♡" Button -> Restarts experience to welcome page
   closeCelebrationBtn.addEventListener('click', () => {
-    TelemetryManager.track("Modal: Clicked 'Close & Read Again' -> Restarted to Page 1");
+    TelemetryManager.track("Modal: Clicked 'Close & Read Again' -> Restarted to Welcome Page");
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
     window.location.reload();
