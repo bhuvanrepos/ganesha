@@ -91,11 +91,11 @@ Anduke ee chinna thing chesa. 😊
 Ninna anukunnattu Ganesha tho celebrate cheyyalekapoyav
 ani baadha padaku.
 Naaku kuda just text lo, matallo chepthe saripodu anipinchindi...
-naa touch koncham undali anipinchindi.
+naa describing words tho koncham edaina cheyali anipinchindi.
 
-Ela untadi ante...
+Ela undali ante...
 Ganesha ♡ neetho matladithe baaguntundi kada,
-rather than just this normal person nunchi oka message la. 😊
+rather than just this normal person nunchi oka message! so ila. 😊
 
 And ninna manam matladina,
 share chesukunna konni vishayalu valla kuda try chesanu...
