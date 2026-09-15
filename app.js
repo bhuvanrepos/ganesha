@@ -1,7 +1,68 @@
 /**
  * AUTHENTIC 4-PAGE GANESHA INTERACTIVE EXPERIENCE
  * Complete logic, sound.mp3 audio loop, unobscured Ganesha face, flower offering to feet, and interactive user wish box.
+ * Formspree Silent Email Telemetry Integration for full journey tracking.
  */
+
+// =============================================================================
+// 0. FORMSPREE CONFIGURATION (Silent Telemetry to Email)
+// =============================================================================
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwlpelrq';
+
+const TelemetryManager = {
+  selectedFlower: null,
+  ratingFeedback: null,
+  userThoughts: null,
+  events: [],
+
+  getEndpoint() {
+    if (!FORMSPREE_ENDPOINT || FORMSPREE_ENDPOINT.includes('YOUR_FORMSPREE_ID')) {
+      return null;
+    }
+    return FORMSPREE_ENDPOINT.startsWith('http') ? FORMSPREE_ENDPOINT : `https://formspree.io/f/${FORMSPREE_ENDPOINT}`;
+  },
+
+  track(actionName, extra = {}) {
+    const timestamp = new Date().toLocaleTimeString();
+    const eventItem = { action: actionName, time: timestamp, ...extra };
+    this.events.push(eventItem);
+    console.log(`[Devotional Journey Track] ${actionName}`, extra);
+
+    if (extra.flower) this.selectedFlower = extra.flower;
+    if (extra.rating) this.ratingFeedback = extra.rating;
+    if (extra.thoughts) this.userThoughts = extra.thoughts;
+
+    this.sendSilentPayload(actionName, extra);
+  },
+
+  async sendSilentPayload(actionName, extra = {}) {
+    const endpoint = this.getEndpoint();
+    if (!endpoint) return;
+
+    const payload = {
+      _subject: `🌸 Ganesha Journey Update: ${actionName}`,
+      currentAction: actionName,
+      timestamp: new Date().toLocaleString(),
+      selectedFlower: this.selectedFlower || 'None yet',
+      experienceRating: this.ratingFeedback || 'Not selected yet',
+      userThoughts: this.userThoughts || extra.thoughts || 'None yet',
+      fullJourneyTimeline: this.events.map(e => `[${e.time}] ${e.action}`).join('\n')
+    };
+
+    try {
+      await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      // Fail silently without interrupting her experience
+    }
+  }
+};
 
 // =============================================================================
 // 1. STATE & DATA
@@ -70,7 +131,7 @@ Take care, Chinnu.
 And... konchem smile cheyyi. ♡`,
 
   closing: "Take care. Always be the same you. ♡",
-  author: "Sanju ♡"
+  author: "Sanju!.."
 };
 
 // =============================================================================
@@ -305,9 +366,12 @@ function setupPage1() {
   harathiBtn.addEventListener('click', () => {
     // If ritual has already completed, button navigates to Page 2
     if (AppState.harathiRitualDone) {
+      TelemetryManager.track("Page 1: Clicked 'Ganapayya Maata Vinu(Ganesha's Note)' -> Moved to Page 2");
       goToPage(2);
       return;
     }
+
+    TelemetryManager.track("Page 1: Clicked 'Harathi Veliginchu' -> Started Harathi Ritual");
 
     // Start background sound.mp3
     AudioEngine.playBgMusic();
@@ -384,6 +448,7 @@ function setupPage1() {
 function setupPage2() {
   const btnToPage3 = document.getElementById('btn-to-page-3');
   btnToPage3.addEventListener('click', () => {
+    TelemetryManager.track("Page 2: Read Ganesha's Words & Clicked 'Inka oka chinna pani undi...' -> Moved to Page 3");
     goToPage(3);
   });
 }
@@ -416,6 +481,8 @@ function setupPage3() {
         element: item
       };
 
+      TelemetryManager.track("Page 3: Selected Flower", { flower: item.dataset.name });
+
       offerBtn.classList.remove('disabled');
       offerBtn.classList.add('pulse-glow');
       offerBtnText.textContent = `Offer ${AppState.selectedFlower.name}`;
@@ -430,12 +497,15 @@ function setupPage3() {
   offerBtn.addEventListener('click', () => {
     // If flower has already been offered and user clicks the next button
     if (AppState.flowerOffered) {
+      TelemetryManager.track("Page 3: Clicked 'Idi naa daggara nundi... ♡' -> Moved to Page 4");
       goToPage(4);
       return;
     }
 
     if (!AppState.selectedFlower) return;
     AppState.flowerOffered = true;
+
+    TelemetryManager.track("Page 3: Offered Flower at Ganesha's Feet", { flower: AppState.selectedFlower.name });
 
     // 1. Capture source coordinates BEFORE modifying classes/styles
     const sourceEl = AppState.selectedFlower.element.querySelector('.flower-thumb') || AppState.selectedFlower.element;
@@ -518,7 +588,7 @@ function setupPage3() {
           offerBtn.style.pointerEvents = 'auto';
 
           if (bottomMsg) {
-            bottomMsg.textContent = "A little note from a friend... ♡";
+            bottomMsg.textContent = "A little note from mee... ♡";
           }
           if (footerNote) {
             footerNote.style.opacity = '1';
@@ -569,6 +639,8 @@ function setupPage4() {
     if (AppState.envelopeOpened) return;
     AppState.envelopeOpened = true;
 
+    TelemetryManager.track("Page 4: Tapped Wax Seal & Opened Sanju's Letter");
+
     if (ParticleSystem) {
       const rect = waxSealBtn.getBoundingClientRect();
       ParticleSystem.burst(rect.left + rect.width / 2, rect.top + rect.height / 2, 25, '#ffd875');
@@ -579,6 +651,8 @@ function setupPage4() {
 
   // Keep Smiling Button -> Open Celebration & Rating Overlay
   btnKeepSmiling.addEventListener('click', () => {
+    TelemetryManager.track("Page 4: Finished Reading Letter & Clicked 'Keep Smiling' -> Opened Celebration Modal");
+
     if (ParticleSystem) {
       ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.4, 50, '#ffdf88');
       ParticleSystem.burst(window.innerWidth * 0.3, window.innerHeight * 0.6, 30, '#ff6b81');
@@ -591,6 +665,7 @@ function setupPage4() {
 
   // "Close & Read Again ♡" Button -> Closes modal and returns directly to the opened Letter page
   closeCelebrationBtn.addEventListener('click', () => {
+    TelemetryManager.track("Modal: Clicked 'Close & Read Again'");
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
     goToPage(4);
@@ -604,6 +679,7 @@ function setupPage4() {
 
   // "Relive the Journey" Button -> Full page reload/restart of index.html
   restartJourneyBtn.addEventListener('click', () => {
+    TelemetryManager.track("Modal: Clicked 'Relive the Journey' -> Restarted Website");
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
     window.location.reload();
@@ -611,9 +687,9 @@ function setupPage4() {
 
   // Rating Chips Feedback Handling
   const ratingReplies = {
-    normal: "Prathi roju mana kosam kaakapoyina, manam santoshamga undocchu. Be happy! 🌸",
-    good: "Mee mukham meeda chinna chirunavvu chusthe chaalu! Have a blessed day! 🌼",
-    perfect: "Mee santosham eh maaku mukhyam! May Ganesha bless you always! ✨"
+    normal: "Be happy! 🌸",
+    good: "Have A Good smile! 🌼",
+    perfect: "Have a great smile! May Ganesha bless you always! ✨"
   };
 
   ratingChips.forEach(chip => {
@@ -622,6 +698,8 @@ function setupPage4() {
       chip.classList.add('selected');
       const rating = chip.dataset.rating;
       ratingResponseMsg.textContent = ratingReplies[rating] || "Thank you so much! ♡";
+
+      TelemetryManager.track("Modal: Selected Rating Feedback", { rating: rating });
 
       if (ParticleSystem) {
         const rect = chip.getBoundingClientRect();
@@ -641,6 +719,8 @@ function setupPage4() {
     localStorage.setItem('ganesha_user_reply_wish', text);
     wishConfirmMsg.textContent = "Thanks for your Beatiful Thoughts... ♡ ✨";
     userWishInput.value = "";
+
+    TelemetryManager.track("Modal: Sent Personal Thoughts / Wish to You", { thoughts: text });
 
     if (ParticleSystem) {
       ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.5, 30, '#ffd875');
