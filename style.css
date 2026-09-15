@@ -445,10 +445,37 @@ body {
   font-family: var(--font-serif);
   font-size: 0.95rem;
   line-height: 1.45;
-  color: rgba(255, 236, 204, 0.95);
+  color: #fff6d6;
   text-align: center;
   margin-bottom: 12px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.9);
+  padding: 6px 14px;
+  background: rgba(20, 11, 6, 0.75);
+  border: 1px solid rgba(255, 216, 117, 0.35);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.75);
+  max-width: 330px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action-prompt-text .prompt-title {
+  font-family: var(--font-serif);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #fff9e6;
+  text-shadow: 0 0 8px rgba(255, 216, 117, 0.6);
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+.action-prompt-text .prompt-subtitle {
+  font-size: 0.82rem;
+  color: var(--gold-bright);
+  font-style: italic;
+  display: inline-block;
 }
 
 /* Authentic Gold Glowing Rounded Pill Button */
@@ -760,9 +787,8 @@ body {
 
 .flower-selection-wrapper.faded-out {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(12px) scale(0.95);
   pointer-events: none;
-  display: none;
 }
 
 .flower-offered-card {
@@ -831,11 +857,11 @@ body {
 /* Target Zone at Ganesha's Lotus Feet (Pedestal Platform) */
 .feet-target-zone {
   position: absolute;
-  bottom: 14%;
+  top: 82%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 110px;
-  height: 45px;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 40px;
   pointer-events: none;
   z-index: 10;
 }
@@ -944,13 +970,13 @@ body {
 /* Flying Flower Animation Element */
 .flying-flower-clone {
   position: fixed;
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  z-index: 100;
+  z-index: 1000;
   pointer-events: none;
-  filter: drop-shadow(0 0 14px rgba(255, 216, 117, 0.9));
-  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+  filter: drop-shadow(0 0 18px rgba(255, 216, 117, 1)) drop-shadow(0 4px 12px rgba(0,0,0,0.85));
+  transition: transform 1.2s cubic-bezier(0.2, 0.85, 0.3, 1), opacity 0.6s ease;
 }
 
 /* ==========================================================================
@@ -1055,25 +1081,42 @@ body {
   position: absolute;
   top: 4px;
   width: 290px;
-  max-height: 330px;
+  max-height: 310px;
   background-color: var(--parchment-bg);
   background-image: 
     linear-gradient(180deg, #faf6ee 0%, #f4ecdc 70%, #ede1cc 100%);
   color: var(--parchment-ink);
-  padding: 14px 16px 12px 16px;
-  border-radius: 6px;
+  padding: 14px 16px 14px 16px;
+  border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 0 25px rgba(184, 144, 94, 0.3);
-  border: 1px solid #dfcca8;
+  border: 1.5px solid #dfcca8;
   z-index: 2;
   transform: translateY(0);
   opacity: 0;
   transition: all 0.9s cubic-bezier(0.2, 0.9, 0.3, 1);
   overflow-y: auto;
-  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c49a6c rgba(237, 225, 204, 0.5);
 }
 
 .letter-sheet::-webkit-scrollbar {
-  display: none;
+  display: block;
+  width: 5px;
+}
+
+.letter-sheet::-webkit-scrollbar-track {
+  background: rgba(220, 200, 170, 0.4);
+  border-radius: 4px;
+}
+
+.letter-sheet::-webkit-scrollbar-thumb {
+  background: #c49a6c;
+  border-radius: 4px;
+}
+
+.letter-sheet::-webkit-scrollbar-thumb:hover {
+  background: #a8794c;
 }
 
 /* Unfolded Opened Letter View */

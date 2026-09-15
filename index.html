@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="te">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Oka Chinna Varam 🪔 | A Warm Devotional Note</title>
-  <meta name="description" content="An authentic, interactive devotional journey offering a quiet moment of peace, harathi, flower offering, and a heartfelt warm note.">
-  
+  <meta name="description"
+    content="An authentic, interactive devotional journey offering a quiet moment of peace, harathi, flower offering, and a heartfelt warm note.">
+
   <!-- Google Fonts: Script, Serif, Handwritten & Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Alex+Brush&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Alex+Brush&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Background Audio Player (Looping sound.mp3) -->
   <audio id="bg-audio" src="sound.mp3" loop preload="auto"></audio>
@@ -32,7 +37,7 @@
 
   <!-- Main Mobile App Container (Portrait 9:16 aesthetic) -->
   <main class="app-viewport">
-    
+
     <!-- Canvas for floating particles, golden embers, and petals -->
     <canvas id="ambient-canvas" class="ambient-canvas"></canvas>
 
@@ -40,12 +45,14 @@
     <!-- PAGE 1: Oka Chinna Varam 🪔 -->
     <!-- ========================================================================= -->
     <section id="page-1" class="page-view active" data-page="1">
-      <div id="p1-silhouette-bg" class="temple-bg-layer silhouette-layer" style="background-image: url('assets/ganesha_silhouette.jpg');"></div>
-      <div id="p1-illuminated-bg" class="temple-bg-layer illuminated-layer" style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
-      
+      <div id="p1-silhouette-bg" class="temple-bg-layer silhouette-layer"
+        style="background-image: url('assets/ganesha_silhouette.jpg');"></div>
+      <div id="p1-illuminated-bg" class="temple-bg-layer illuminated-layer"
+        style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
+
       <!-- Divine Halo Radiation effect for Harathi sequence -->
       <div id="divine-halo" class="divine-halo-effect"></div>
-      
+
       <!-- Temporary Diya Flame Overlays (Active ONLY during dark silhouette ignition) -->
       <div id="diya-left" class="diya-flame-overlay left-diya">
         <div class="flame-core"></div>
@@ -102,7 +109,8 @@
     <!-- PAGE 2: Na Chinna Maata... 🌼 (GANESHA FACE FULLY OPEN & VISIBLE) -->
     <!-- ========================================================================= -->
     <section id="page-2" class="page-view" data-page="2">
-      <div class="temple-bg-layer illuminated-layer visible" style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
+      <div class="temple-bg-layer illuminated-layer visible"
+        style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
       <div class="warm-vignette-overlay"></div>
 
       <div class="page-content page-2-content">
@@ -181,7 +189,8 @@
     <!-- PAGE 3: Oka Chinna Pani Chesthava ? 🌸 (GANESHA FACE VISIBLE & CLEAN TRAY) -->
     <!-- ========================================================================= -->
     <section id="page-3" class="page-view" data-page="3">
-      <div class="temple-bg-layer illuminated-layer visible" style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
+      <div class="temple-bg-layer illuminated-layer visible"
+        style="background-image: url('assets/ganesha_illuminated.jpg');"></div>
       <div class="warm-vignette-overlay"></div>
 
       <div class="page-content page-3-content">
@@ -208,41 +217,45 @@
           <!-- State A: Flower Selection Wrapper -->
           <div class="flower-selection-wrapper" id="flower-selection-wrapper">
             <div id="flower-prompt-pill" class="flower-prompt-pill">
-              <span class="flower-prompt-heading">Oka poolu aayana kosam...?</span>
+              <span class="flower-prompt-heading">Oka flower aayana kosam...?</span>
               <p class="flower-prompt-sub">Tap a flower and offer it at Ganapayya's feet ♡</p>
             </div>
 
             <!-- Five Flowers Selection Row -->
             <div class="flower-selection-tray" id="flower-tray">
               <!-- Flower 1: Malle Poo -->
-              <div class="flower-option-item" data-flower="malle" data-name="Malle Poo" data-img="assets/flower_malle.png">
+              <div class="flower-option-item" data-flower="malle" data-name="Malle Poo"
+                data-img="assets/flower_malle.png">
                 <div class="flower-circle-badge">
                   <img src="assets/flower_malle.png" alt="Malle Poo" class="flower-thumb">
                   <div class="glow-ring"></div>
                 </div>
-                <span class="flower-label">Malle Poo</span>
+                <span class="flower-label">Malle</span>
               </div>
 
               <!-- Flower 2: Tamara Poo -->
-              <div class="flower-option-item" data-flower="tamara" data-name="Tamara Poo" data-img="assets/flower_tamara.png">
+              <div class="flower-option-item" data-flower="tamara" data-name="Tamara Poo"
+                data-img="assets/flower_tamara.png">
                 <div class="flower-circle-badge">
                   <img src="assets/flower_tamara.png" alt="Tamara Poo" class="flower-thumb">
                   <div class="glow-ring"></div>
                 </div>
-                <span class="flower-label">Tamara Poo</span>
+                <span class="flower-label">Tamara</span>
               </div>
 
               <!-- Flower 3: Banthi Poo -->
-              <div class="flower-option-item" data-flower="banthi" data-name="Banthi Poo" data-img="assets/flower_banthi.png">
+              <div class="flower-option-item" data-flower="banthi" data-name="Banthi Poo"
+                data-img="assets/flower_banthi.png">
                 <div class="flower-circle-badge">
                   <img src="assets/flower_banthi.png" alt="Banthi Poo" class="flower-thumb">
                   <div class="glow-ring"></div>
                 </div>
-                <span class="flower-label">Banthi Poo</span>
+                <span class="flower-label">Banthi</span>
               </div>
 
               <!-- Flower 4: Mandaram -->
-              <div class="flower-option-item" data-flower="mandaram" data-name="Mandaram" data-img="assets/flower_mandaram.png">
+              <div class="flower-option-item" data-flower="mandaram" data-name="Mandaram"
+                data-img="assets/flower_mandaram.png">
                 <div class="flower-circle-badge">
                   <img src="assets/flower_mandaram.png" alt="Mandaram" class="flower-thumb">
                   <div class="glow-ring"></div>
@@ -251,7 +264,8 @@
               </div>
 
               <!-- Flower 5: Chamanti -->
-              <div class="flower-option-item" data-flower="chamanti" data-name="Chamanti" data-img="assets/flower_chamanti.png">
+              <div class="flower-option-item" data-flower="chamanti" data-name="Chamanti"
+                data-img="assets/flower_chamanti.png">
                 <div class="flower-circle-badge">
                   <img src="assets/flower_chamanti.png" alt="Chamanti" class="flower-thumb">
                   <div class="glow-ring"></div>
@@ -307,9 +321,6 @@
             </div>
             <p class="tag-subtext">A few words from a friend... to you. ♡</p>
           </div>
-          <button id="edit-note-btn" class="edit-note-pill-btn" title="Customize Note">
-            <span>✏️ Edit Note</span>
-          </button>
         </div>
 
         <!-- Aesthetic Kraft Paper Tags -->
@@ -327,18 +338,19 @@
 
         <!-- Envelope and Letter Interactive Stage -->
         <div class="envelope-stage-container" id="envelope-stage">
-          
+
           <!-- Realistic Dusty Rose Pink Envelope -->
           <div class="envelope-wrapper" id="envelope-elem">
             <div class="envelope-back"></div>
-            
+
             <!-- Letter Sheet tucked inside -->
             <div class="letter-sheet deckled-letter-paper" id="letter-sheet-elem">
               <!-- Letter Header Motif -->
               <div class="letter-header">
                 <div class="ganesha-sketch-motif">
                   <!-- Divine Ganesha Line Drawing SVG -->
-                  <svg viewBox="0 0 100 100" class="ganesha-svg-icon" fill="none" stroke="#7d5836" stroke-width="2.5" stroke-linecap="round">
+                  <svg viewBox="0 0 100 100" class="ganesha-svg-icon" fill="none" stroke="#7d5836" stroke-width="2.5"
+                    stroke-linecap="round">
                     <path d="M50 15 Q30 20 25 35 Q20 50 30 65 Q38 78 50 78 Q62 78 70 65 Q80 50 75 35 Q70 20 50 15 Z" />
                     <path d="M50 25 C45 35 40 50 42 62 C44 70 54 70 58 60 C60 55 60 50 56 48" />
                     <circle cx="38" cy="38" r="2.5" fill="#7d5836" />
@@ -423,32 +435,6 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- Edit Note Modal (Allows personalization of letter text & author name) -->
-  <!-- ========================================================================= -->
-  <div id="edit-modal" class="modal-backdrop" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Customize Your Warm Note 💌</h3>
-        <button id="close-modal-btn" class="close-btn" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <label for="input-salutation">Greeting / Salutation:</label>
-        <input type="text" id="input-salutation" class="modal-input" value="Hey...">
-
-        <label for="input-letter-body">Note Content (Telugu / English):</label>
-        <textarea id="input-letter-body" class="modal-textarea" rows="8"></textarea>
-
-        <label for="input-author">Signature / From:</label>
-        <input type="text" id="input-author" class="modal-input" value="A Friend ♡">
-      </div>
-      <div class="modal-footer">
-        <button id="reset-default-btn" class="btn-secondary">Reset Default</button>
-        <button id="save-note-btn" class="btn-primary">Save Note ✨</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
   <!-- Authentic Devotional Celebration Modal with Interactive Wish/Reply Box -->
   <!-- ========================================================================= -->
   <div id="celebration-overlay" class="celebration-overlay" aria-hidden="true">
@@ -459,11 +445,13 @@
       </div>
 
       <h2 class="gold-shimmer">Sadā Santhoshamga Undu! ♡</h2>
-      <p class="blessing-subhead">May Lord Ganesha always bless you with peace, happiness, light, and sweet moments in life. ✨</p>
-      
+      <p class="blessing-subhead">May Lord Ganesha always bless you with peace, happiness, light, and sweet moments in
+        life. ✨</p>
+
       <!-- Interactive Feeling / Rating Question -->
       <div class="feedback-rating-section">
-        <p class="rating-prompt">Ee anubhavam meeku ela anipinchindi?<br><span>How did this experience feel to you?</span></p>
+        <p class="rating-prompt">Ee anubhavam neeku ela anipinchindi?<br><span>How did this experience feel to
+            you?</span></p>
         <div class="rating-options-row">
           <button class="rating-chip-btn" data-rating="normal">
             <span class="chip-lamp">🌸</span>
@@ -485,7 +473,8 @@
       <div class="user-reply-section">
         <label for="user-wish-input" class="reply-label">Mee manasulo maata / Write a thought or wish: ♡</label>
         <div class="reply-input-group">
-          <textarea id="user-wish-input" class="user-wish-textarea" rows="2" placeholder="Write anything in your heart..."></textarea>
+          <textarea id="user-wish-input" class="user-wish-textarea" rows="2"
+            placeholder="Write anything in your heart..."></textarea>
           <button id="send-wish-btn" class="send-wish-pill-btn">
             <span>Send Blessing ✨</span>
           </button>
@@ -506,4 +495,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>

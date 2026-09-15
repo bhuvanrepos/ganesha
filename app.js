@@ -17,51 +17,72 @@ const AppState = {
 };
 
 const DEFAULT_NOTE = {
-  salutation: "Hey...",
-  body: `Ninna nee mood konchem off ga undani telisi,
+  salutation: "Hi Chinnu...",
+
+  body: `Ninna nii mood konchem off ga undani telisi,
 edho pedda solution ivvali ani kaadu...
 just konchem smile cheyyinchali anipinchindi.
+Nuvvu first time naatho cheppavu kada, nenu edichanu ani...
+naaku appudu niku call chesi matladali anipinchindi,
+but timing correct kaadu ani anipinchi em cheyalo tochaledu.
 Anduke ee chinna thing chesa. 😊
 
-Ninna anukunnattu Ganesh Chaturthi
-jaragaledu ani baadha padaku.
-Oka roju sarigga jaragakapoyina,
-nuvvu enjoy chesina moments anni
-waste aipovu kada. ♡
+Ninna anukunnattu Ganesha tho celebrate cheyyalekapoyav
+ani baadha padaku.
+Naaku kuda just text lo, matallo chepthe saripodu anipinchindi...
+naa touch koncham undali anipinchindi.
 
-So ippudu aa mood ni konchem pakkana petti,
-oka small smile ivvu. Adhi chaalu. ♡
+Ela untadi ante...
+Ganesha ♡ neetho matladithe baaguntundi kada,
+rather than just this normal person nunchi oka message la. 😊
+
+And ninna manam matladina,
+share chesukunna konni vishayalu valla kuda try chesanu...
+niku kastha relief iddham ani,
+inka ibbandi petakudadhu ani kuda.
+
+Em kaadu...
+Mummy tho Navaratri chala baaga jarupukuntav ani naa feel.
+Chala beautiful time spend chestav Mummy tho,
+Amma blessings tho. ❤️
+
+So ippudu aa sad mood ni konchem pakkana petti,
+oka small smile ivvu.
+Adhi chaalu. ♡
 
 And yes...
-ee website motham complete cheyyadaniki
+
+Ee website motham complete chesi,
 nuvvu last page varaku vachav ante,
-at least naa effort waste kaaledu. 😊`,
+at least naa chinna vision and thought waste kaaledu ani
+anukuntunna. 😊
+
+Last lo oka chinna mata...
+
+Ila sudden ga chesi shock iddham ani matram kaadu.
+Just... I feel you deserve to be happy.
+
+Ninna naa valla niku konchem relief vachindo ledo naaku telidu...
+but nuvvu nannu "Sanju" ani pilichinappudu,
+adi naaku oka different kind of peace and happiness. ❤️
+
+Take care, Chinnu.
+And... konchem smile cheyyi. ♡`,
+
   closing: "Take care. Always be the same you. ♡",
-  author: "A Friend ♡"
+  author: "Sanju ♡"
 };
 
 // =============================================================================
-// 2. AUDIO ENGINE (sound.mp3 looping + synthesized divine bell / chimes)
+// 2. AUDIO ENGINE (sound.mp3 continuous loop only - click sounds removed)
 // =============================================================================
 class DivineAudioEngine {
   constructor() {
     this.audioElem = document.getElementById('bg-audio');
-    this.ctx = null;
     this.isPlaying = false;
   }
 
-  initSynth() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
-    }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-  }
-
   toggleSound() {
-    this.initSynth();
     if (!this.isPlaying) {
       this.playBgMusic();
       return true;
@@ -98,104 +119,11 @@ class DivineAudioEngine {
     }
   }
 
-  // Realistic Temple Bell synthesis (metallic multi-harmonic resonance)
-  playTempleBell(volume = 0.7) {
-    this.initSynth();
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-    const masterGain = this.ctx.createGain();
-    masterGain.gain.setValueAtTime(volume * 0.45, now);
-    masterGain.connect(this.ctx.destination);
-
-    const freqs = [680, 1360, 2040, 2720, 3400, 4200];
-    const decays = [3.5, 2.8, 2.2, 1.6, 1.1, 0.8];
-    const amps = [1.0, 0.65, 0.45, 0.25, 0.15, 0.08];
-
-    freqs.forEach((f, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(f + (Math.random() * 4 - 2), now);
-
-      gain.gain.setValueAtTime(amps[i], now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + decays[i]);
-
-      osc.connect(gain);
-      gain.connect(masterGain);
-      osc.start(now);
-      osc.stop(now + decays[i] + 0.1);
-    });
-  }
-
-  // Flame lighting whoosh
-  playFlameIgnite() {
-    this.initSynth();
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-    
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(140, now);
-    osc.frequency.exponentialRampToValueAtTime(340, now + 0.4);
-
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.5);
-  }
-
-  // Flower Offering Chime
-  playFlowerChime() {
-    this.initSynth();
-    if (!this.ctx) return;
-    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-    const now = this.ctx.currentTime;
-
-    notes.forEach((freq, index) => {
-      const startTime = now + index * 0.08;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, startTime);
-
-      gain.gain.setValueAtTime(0.14, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.2);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + 1.3);
-    });
-  }
-
-  // Wax Seal Open
-  playWaxSealOpen() {
-    this.initSynth();
-    if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(440, now);
-    osc.frequency.exponentialRampToValueAtTime(110, now + 0.12);
-
-    gain.gain.setValueAtTime(0.28, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.2);
-
-    setTimeout(() => {
-      this.playFlowerChime();
-    }, 150);
-  }
+  // Click & synth audio removed per user request: only sound.mp3 plays
+  playTempleBell() {}
+  playFlameIgnite() {}
+  playFlowerChime() {}
+  playWaxSealOpen() {}
 }
 
 const AudioEngine = new DivineAudioEngine();
@@ -336,6 +264,9 @@ let ParticleSystem;
 function goToPage(pageNumber) {
   if (pageNumber === AppState.currentPage) return;
 
+  // Clean up any stray flying flower clones immediately
+  document.querySelectorAll('.flying-flower-clone').forEach(el => el.remove());
+
   const currentView = document.getElementById(`page-${AppState.currentPage}`);
   const nextView = document.getElementById(`page-${pageNumber}`);
 
@@ -347,8 +278,6 @@ function goToPage(pageNumber) {
     nextView.classList.add('active');
     AppState.currentPage = pageNumber;
   }
-
-  AudioEngine.playTempleBell(0.4);
 
   if (ParticleSystem) {
     ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.4, 20);
@@ -392,7 +321,6 @@ function setupPage1() {
     setTimeout(() => {
       leftDiya.style.display = 'block';
       leftDiya.classList.add('lit');
-      AudioEngine.playFlameIgnite();
       if (ParticleSystem) {
         const rect = leftDiya.getBoundingClientRect();
         ParticleSystem.burst(rect.left + 12, rect.top + 10, 15, '#ffa21f');
@@ -403,7 +331,6 @@ function setupPage1() {
     setTimeout(() => {
       rightDiya.style.display = 'block';
       rightDiya.classList.add('lit');
-      AudioEngine.playFlameIgnite();
       if (ParticleSystem) {
         const rect = rightDiya.getBoundingClientRect();
         ParticleSystem.burst(rect.left + 12, rect.top + 10, 15, '#ffa21f');
@@ -433,22 +360,17 @@ function setupPage1() {
       }
     }, 3000);
 
-    // 3.6s -> Divine temple bell resonates
-    setTimeout(() => {
-      AudioEngine.playTempleBell(1.0);
-    }, 3600);
-
     // 4.2s -> Complete Harathi Ritual: Ganesha in full glorious darshan!
     setTimeout(() => {
       AppState.harathiRitualDone = true;
 
-      p1PromptText.innerHTML = "Ganapayya Darshanam labhinchindi... ♡<br><span style='font-size:0.82rem; color:#ffd875;'>Ganapayya meekosam oka maata chepthunnaru...</span>";
+      p1PromptText.innerHTML = `<span class="prompt-title">Ganapayya Darshanam labhinchindi... ♡</span><br><span class="prompt-subtitle">Ganapayya meekosam oka maata chepthunnaru...</span>`;
       p1FooterSubtext.textContent = "Tap to view Ganapayya's Note ♡";
 
       harathiBtn.classList.remove('disabled');
       harathiBtn.classList.add('pulse-glow');
       harathiBtn.innerHTML = `
-        <span class="btn-lamp-icon">🌼</span>
+        <span class="btn-lamp-icon">🌸</span>
         <span class="btn-text">Ganapayya Maata Vinandi</span>
         <span class="btn-arrow-icon">→</span>
       `;
@@ -478,7 +400,7 @@ function setupPage3() {
   const offerBtnText = document.getElementById('offer-btn-text');
   const offerBtnIcon = document.getElementById('offer-btn-icon');
   const bottomMsg = document.getElementById('flower-bottom-msg');
-  const feetZone = document.getElementById('feet-target-zone');
+  const footerNote = bottomMsg ? bottomMsg.closest('.footer-note') : null;
 
   flowerItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -498,7 +420,6 @@ function setupPage3() {
       offerBtn.classList.add('pulse-glow');
       offerBtnText.textContent = `Offer ${AppState.selectedFlower.name}`;
 
-      AudioEngine.playFlameIgnite();
       if (ParticleSystem) {
         const rect = item.getBoundingClientRect();
         ParticleSystem.burst(rect.left + rect.width / 2, rect.top + rect.height / 2, 12, '#ffd875');
@@ -507,81 +428,104 @@ function setupPage3() {
   });
 
   offerBtn.addEventListener('click', () => {
-    if (!AppState.selectedFlower || AppState.flowerOffered) {
-      if (AppState.flowerOffered) {
-        goToPage(4);
-      }
+    // If flower has already been offered and user clicks the next button
+    if (AppState.flowerOffered) {
+      goToPage(4);
       return;
     }
+
+    if (!AppState.selectedFlower) return;
     AppState.flowerOffered = true;
 
-    offerBtn.classList.remove('pulse-glow');
-    offerBtn.classList.add('disabled');
-    offerBtnText.textContent = `Offering ${AppState.selectedFlower.name}...`;
-
-    // 1. Hide the flower selection options cleanly
-    flowerSelectionWrapper.classList.add('faded-out');
-
-    // 2. Create flying flower clone element
-    const sourceEl = AppState.selectedFlower.element.querySelector('.flower-thumb');
+    // 1. Capture source coordinates BEFORE modifying classes/styles
+    const sourceEl = AppState.selectedFlower.element.querySelector('.flower-thumb') || AppState.selectedFlower.element;
     const srcRect = sourceEl.getBoundingClientRect();
-    const destRect = feetZone.getBoundingClientRect();
+
+    // 2. Compute Viewport & Ganesha's Sacred Lotus Feet Coordinates (at 82% height, down at pedestal steps)
+    const viewportEl = document.querySelector('.app-viewport') || document.body;
+    const vpRect = viewportEl.getBoundingClientRect();
+    const destX = vpRect.left + vpRect.width * 0.5;
+    const destY = vpRect.top + vpRect.height * 0.82; // Lord Ganesha's sacred feet on pedestal steps
+
+    const startX = srcRect.width > 0 ? (srcRect.left + srcRect.width / 2) : destX;
+    const startY = srcRect.height > 0 ? (srcRect.top + srcRect.height / 2) : (vpRect.top + vpRect.height * 0.78);
+
+    // 3. Immediately clean previous clones and create single Flying Flower Clone
+    document.querySelectorAll('.flying-flower-clone').forEach(el => el.remove());
 
     const clone = document.createElement('img');
     clone.src = AppState.selectedFlower.img;
+    clone.alt = AppState.selectedFlower.name;
     clone.className = 'flying-flower-clone';
-    clone.style.left = `${srcRect.left}px`;
-    clone.style.top = `${srcRect.top}px`;
-    clone.style.width = `${srcRect.width}px`;
-    clone.style.height = `${srcRect.height}px`;
+    clone.style.position = 'fixed';
+    clone.style.left = `${startX - 24}px`;
+    clone.style.top = `${startY - 24}px`;
+    clone.style.width = '48px';
+    clone.style.height = '48px';
+    clone.style.opacity = '1';
+    clone.style.zIndex = '1000';
+    clone.style.transform = 'scale(1) rotate(0deg)';
     document.body.appendChild(clone);
 
-    AudioEngine.playFlowerChime();
+    // 4. Hide flower selection tray and hide action button while flower is falling
+    flowerSelectionWrapper.classList.add('faded-out');
+    offerBtn.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    offerBtn.style.opacity = '0';
+    offerBtn.style.pointerEvents = 'none';
+    if (footerNote) {
+      footerNote.style.transition = 'opacity 0.4s ease';
+      footerNote.style.opacity = '0';
+    }
 
-    // 3. Animate flight trajectory directly down to Ganesha's lotus feet
+    // 5. Flower glides smoothly down directly to Ganesha's sacred lotus feet
     requestAnimationFrame(() => {
-      const deltaX = (destRect.left + destRect.width / 2) - (srcRect.left + srcRect.width / 2);
-      const deltaY = (destRect.top + destRect.height / 2) - (srcRect.top + srcRect.height / 2);
-
-      clone.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.8) rotate(360deg)`;
-      clone.style.opacity = '1';
+      const deltaX = destX - startX;
+      const deltaY = destY - startY;
+      clone.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.92) rotate(360deg)`;
     });
 
-    // 4. When flower lands at lotus feet (~1.2s)
+    // 6. At 1.1s: Flower arrives and lands at Ganesha's sacred feet -> Golden burst
     setTimeout(() => {
-      AudioEngine.playTempleBell(0.85);
-
       if (ParticleSystem) {
-        const dest = feetZone.getBoundingClientRect();
-        ParticleSystem.burst(dest.left + dest.width / 2, dest.top + dest.height / 2, 35, '#ffd875');
+        ParticleSystem.burst(destX, destY, 35, '#ffd875');
       }
 
-      // Fade and remove clone from DOM
-      clone.style.opacity = '0';
+      // 7. At 1.8s (after resting at feet for ~0.7s): Flower fades out and dissolves completely
       setTimeout(() => {
-        if (clone && clone.parentNode) {
-          clone.parentNode.removeChild(clone);
-        }
-      }, 400);
+        clone.style.opacity = '0';
+        clone.style.filter = 'blur(6px) drop-shadow(0 0 20px #ffd875)';
+        clone.style.transform = `translate(${destX - startX}px, ${destY - startY}px) scale(0.4) rotate(360deg)`;
 
-      // Cleanly reveal blessing hover card without overlap
-      flowerSelectionWrapper.style.display = 'none';
-      flowerOfferedCard.classList.add('visible');
+        // 8. At 2.3s: Remove flower clone from DOM completely
+        setTimeout(() => {
+          if (clone.parentElement) {
+            clone.remove();
+          }
+          flowerSelectionWrapper.style.display = 'none';
 
-      // Update button to proceed to Page 4
-      offerBtn.classList.remove('disabled');
-      offerBtn.classList.add('pulse-glow');
-      offerBtnIcon.textContent = "💌";
-      offerBtnText.textContent = "Idi naa daggara nundi... ♡ →";
-      bottomMsg.textContent = "A little note from a friend... ♡";
+          // 9. ONLY THEN: Reveal the hover blessing card and the next proceed button!
+          if (ParticleSystem) {
+            ParticleSystem.burst(destX, vpRect.top + vpRect.height * 0.65, 25, '#ffd875');
+          }
 
-      // Smooth auto transition to Page 4 after 3.2s
-      setTimeout(() => {
-        if (AppState.currentPage === 3) {
-          goToPage(4);
-        }
-      }, 3200);
-    }, 1200);
+          flowerOfferedCard.classList.add('visible');
+
+          offerBtn.classList.remove('disabled');
+          offerBtn.classList.add('pulse-glow');
+          offerBtnIcon.textContent = "💌";
+          offerBtnText.textContent = "Idi naa daggara nundi... ♡ →";
+          offerBtn.style.opacity = '1';
+          offerBtn.style.pointerEvents = 'auto';
+
+          if (bottomMsg) {
+            bottomMsg.textContent = "A little note from a friend... ♡";
+          }
+          if (footerNote) {
+            footerNote.style.opacity = '1';
+          }
+        }, 500);
+      }, 700);
+    }, 1100);
   });
 }
 
@@ -591,6 +535,7 @@ function setupPage3() {
 function setupPage4() {
   const waxSealBtn = document.getElementById('wax-seal-btn');
   const envelopeElem = document.getElementById('envelope-elem');
+  const letterSheetElem = document.getElementById('letter-sheet-elem');
   const btnKeepSmiling = document.getElementById('btn-keep-smiling');
   const celebrationOverlay = document.getElementById('celebration-overlay');
   const closeCelebrationBtn = document.getElementById('close-celebration-btn');
@@ -624,8 +569,6 @@ function setupPage4() {
     if (AppState.envelopeOpened) return;
     AppState.envelopeOpened = true;
 
-    AudioEngine.playWaxSealOpen();
-
     if (ParticleSystem) {
       const rect = waxSealBtn.getBoundingClientRect();
       ParticleSystem.burst(rect.left + rect.width / 2, rect.top + rect.height / 2, 25, '#ffd875');
@@ -636,9 +579,6 @@ function setupPage4() {
 
   // Keep Smiling Button -> Open Celebration & Rating Overlay
   btnKeepSmiling.addEventListener('click', () => {
-    AudioEngine.playTempleBell(1.0);
-    AudioEngine.playFlowerChime();
-
     if (ParticleSystem) {
       ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.4, 50, '#ffdf88');
       ParticleSystem.burst(window.innerWidth * 0.3, window.innerHeight * 0.6, 30, '#ff6b81');
@@ -649,16 +589,24 @@ function setupPage4() {
     celebrationOverlay.setAttribute('aria-hidden', 'false');
   });
 
+  // "Close & Read Again ♡" Button -> Closes modal and returns directly to the opened Letter page
   closeCelebrationBtn.addEventListener('click', () => {
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
+    goToPage(4);
+    if (envelopeElem) {
+      envelopeElem.classList.add('opened');
+    }
+    if (letterSheetElem) {
+      letterSheetElem.scrollTop = 0;
+    }
   });
 
-  // Restart Journey (Full Reset to Page 1 Silhouette Initial State)
+  // "Relive the Journey" Button -> Full page reload/restart of index.html
   restartJourneyBtn.addEventListener('click', () => {
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
-    resetExperience();
+    window.location.reload();
   });
 
   // Rating Chips Feedback Handling
@@ -674,7 +622,6 @@ function setupPage4() {
       chip.classList.add('selected');
       const rating = chip.dataset.rating;
       ratingResponseMsg.textContent = ratingReplies[rating] || "Thank you so much! ♡";
-      AudioEngine.playFlowerChime();
 
       if (ParticleSystem) {
         const rect = chip.getBoundingClientRect();
@@ -694,64 +641,65 @@ function setupPage4() {
     localStorage.setItem('ganesha_user_reply_wish', text);
     wishConfirmMsg.textContent = "Mee manasulo maata Ganapayya daggara cherindi... ♡ ✨";
     userWishInput.value = "";
-    AudioEngine.playFlowerChime();
 
     if (ParticleSystem) {
       ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.5, 30, '#ffd875');
     }
   });
 
-  // Edit Note Modal Handlers
-  editNoteBtn.addEventListener('click', () => {
-    const note = getStoredNote();
-    inputSalutation.value = note.salutation;
-    inputLetterBody.value = note.body;
-    inputAuthor.value = note.author;
-    editModal.classList.add('open');
-    editModal.setAttribute('aria-hidden', 'false');
-  });
+  // Edit Note Modal Handlers (if present in DOM)
+  if (editNoteBtn && editModal) {
+    editNoteBtn.addEventListener('click', () => {
+      const note = getStoredNote();
+      inputSalutation.value = note.salutation;
+      inputLetterBody.value = note.body;
+      inputAuthor.value = note.author;
+      editModal.classList.add('open');
+      editModal.setAttribute('aria-hidden', 'false');
+    });
 
-  closeModalBtn.addEventListener('click', () => {
-    editModal.classList.remove('open');
-    editModal.setAttribute('aria-hidden', 'true');
-  });
-
-  saveNoteBtn.addEventListener('click', () => {
-    const updatedNote = {
-      salutation: inputSalutation.value.trim() || DEFAULT_NOTE.salutation,
-      body: inputLetterBody.value.trim() || DEFAULT_NOTE.body,
-      closing: DEFAULT_NOTE.closing,
-      author: inputAuthor.value.trim() || DEFAULT_NOTE.author
-    };
-    localStorage.setItem('ganesha_custom_note', JSON.stringify(updatedNote));
-    renderNoteText(updatedNote);
-    editModal.classList.remove('open');
-    editModal.setAttribute('aria-hidden', 'true');
-
-    AudioEngine.playFlowerChime();
-    if (ParticleSystem) {
-      ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.5, 20);
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        editModal.classList.remove('open');
+        editModal.setAttribute('aria-hidden', 'true');
+      });
     }
-  });
 
-  resetDefaultBtn.addEventListener('click', () => {
-    localStorage.removeItem('ganesha_custom_note');
-    renderNoteText(DEFAULT_NOTE);
-    inputSalutation.value = DEFAULT_NOTE.salutation;
-    inputLetterBody.value = DEFAULT_NOTE.body;
-    inputAuthor.value = DEFAULT_NOTE.author;
-    editModal.classList.remove('open');
-    editModal.setAttribute('aria-hidden', 'true');
-  });
+    if (saveNoteBtn) {
+      saveNoteBtn.addEventListener('click', () => {
+        const updatedNote = {
+          salutation: inputSalutation.value.trim() || DEFAULT_NOTE.salutation,
+          body: inputLetterBody.value.trim() || DEFAULT_NOTE.body,
+          closing: DEFAULT_NOTE.closing,
+          author: inputAuthor.value.trim() || DEFAULT_NOTE.author
+        };
+        localStorage.setItem('ganesha_custom_note', JSON.stringify(updatedNote));
+        renderNoteText(updatedNote);
+        editModal.classList.remove('open');
+        editModal.setAttribute('aria-hidden', 'true');
+
+        if (ParticleSystem) {
+          ParticleSystem.burst(window.innerWidth / 2, window.innerHeight * 0.5, 20);
+        }
+      });
+    }
+
+    if (resetDefaultBtn) {
+      resetDefaultBtn.addEventListener('click', () => {
+        localStorage.removeItem('ganesha_custom_note');
+        renderNoteText(DEFAULT_NOTE);
+        inputSalutation.value = DEFAULT_NOTE.salutation;
+        inputLetterBody.value = DEFAULT_NOTE.body;
+        inputAuthor.value = DEFAULT_NOTE.author;
+        editModal.classList.remove('open');
+        editModal.setAttribute('aria-hidden', 'true');
+      });
+    }
+  }
 }
 
 function getStoredNote() {
-  try {
-    const saved = localStorage.getItem('ganesha_custom_note');
-    return saved ? JSON.parse(saved) : DEFAULT_NOTE;
-  } catch (e) {
-    return DEFAULT_NOTE;
-  }
+  return DEFAULT_NOTE;
 }
 
 function renderNoteText(note) {
@@ -785,74 +733,7 @@ function escapeHtml(text) {
 
 // Complete Experience Reset: Returns smoothly to Page 1 Welcome Silhouette Shot
 function resetExperience() {
-  AppState.currentPage = 1;
-  AppState.harathiRitualDone = false;
-  AppState.selectedFlower = null;
-  AppState.flowerOffered = false;
-  AppState.envelopeOpened = false;
-
-  // Clean up any lingering flying flower clones
-  document.querySelectorAll('.flying-flower-clone').forEach(el => el.remove());
-
-  // Reset Page 1 to initial dark silhouette state
-  const page1 = document.getElementById('page-1');
-  page1.classList.remove('illuminated-active');
-  document.getElementById('p1-illuminated-bg').classList.remove('visible');
-  document.getElementById('divine-halo').classList.remove('radiating');
-  const leftDiya = document.getElementById('diya-left');
-  const rightDiya = document.getElementById('diya-right');
-  leftDiya.classList.remove('lit');
-  rightDiya.classList.remove('lit');
-  leftDiya.style.display = 'none';
-  rightDiya.style.display = 'none';
-
-  const p1PromptText = document.getElementById('p1-prompt-text');
-  p1PromptText.innerHTML = "Oka chinna nimisham...<br>ikkada undu. ♡";
-  document.getElementById('p1-footer-subtext').textContent = "Let's begin... ♡";
-
-  const harathiBtn = document.getElementById('btn-harathi-action');
-  harathiBtn.classList.remove('disabled');
-  harathiBtn.classList.add('pulse-glow');
-  harathiBtn.innerHTML = `
-    <span class="btn-lamp-icon">🪔</span>
-    <span class="btn-text" id="harathi-btn-text">Harathi Veliginchu</span>
-    <span class="btn-arrow-icon">→</span>
-  `;
-
-  // Reset Page 3
-  const flowerSelectionWrapper = document.getElementById('flower-selection-wrapper');
-  if (flowerSelectionWrapper) {
-    flowerSelectionWrapper.style.display = '';
-    flowerSelectionWrapper.classList.remove('faded-out');
-  }
-  const flowerOfferedCard = document.getElementById('flower-offered-card');
-  if (flowerOfferedCard) {
-    flowerOfferedCard.classList.remove('visible');
-  }
-
-  const flowerTray = document.getElementById('flower-tray');
-  flowerTray.classList.remove('has-selection');
-  flowerTray.querySelectorAll('.flower-option-item').forEach(i => i.classList.remove('selected'));
-  const offerBtn = document.getElementById('btn-offer-flower');
-  offerBtn.classList.add('disabled');
-  offerBtn.classList.remove('pulse-glow');
-  document.getElementById('offer-btn-icon').textContent = '🌸';
-  document.getElementById('offer-btn-text').textContent = 'Offer This Flower';
-  document.getElementById('flower-bottom-msg').textContent = 'Chinna pani... Pedda santosham...';
-
-  // Reset Page 4
-  document.getElementById('envelope-elem').classList.remove('opened');
-
-  // Reset Rating feedback selection & Wish Toast
-  document.querySelectorAll('.rating-chip-btn').forEach(c => c.classList.remove('selected'));
-  document.getElementById('rating-response-msg').textContent = '';
-  document.getElementById('wish-confirm-msg').textContent = '';
-
-  // Restart sound.mp3 from beginning
-  AudioEngine.restartBgMusic();
-
-  // Navigate back to Page 1
-  goToPage(1);
+  window.location.reload();
 }
 
 // =============================================================================
@@ -867,7 +748,6 @@ function setupGlobalControls() {
   document.querySelectorAll('.hanging-bell-decor').forEach(bell => {
     bell.addEventListener('click', () => {
       bell.style.transform = 'scale(1.3) rotate(-15deg)';
-      AudioEngine.playTempleBell(0.9);
       if (ParticleSystem) {
         const rect = bell.getBoundingClientRect();
         ParticleSystem.burst(rect.left + rect.width / 2, rect.top + rect.height / 2, 10, '#ffd875');
