@@ -42,8 +42,9 @@ const TelemetryManager = {
     const flower = this.selectedFlower || 'None yet';
     const rating = this.ratingFeedback || 'Not selected yet';
     const thoughts = this.userThoughts || extra.thoughts || 'No thoughts written yet';
+    const currentSite = window.location.href || 'https://ganeshahii.vercel.app/';
 
-    let subject = `🌸 Ganesha Journey: ${actionName}`;
+    let subject = `🌸 [ganeshahii.vercel.app] ${actionName}`;
     if (extra.thoughts) {
       subject = `💌 New Wish/Thoughts from Her: "${extra.thoughts.substring(0, 35)}..." [Rating: ${rating}, Flower: ${flower}]`;
     } else if (extra.rating) {
@@ -55,6 +56,7 @@ const TelemetryManager = {
     const emailSummary = [
       `🌺 GANESHA DEVOTIONAL INTERACTION SUMMARY`,
       `=========================================`,
+      `🌐 Website: ${currentSite}`,
       `💐 Flower Chosen: ${flower}`,
       `⭐ Experience Rating: ${rating}`,
       `💌 Her Written Thoughts:`,
@@ -70,6 +72,7 @@ const TelemetryManager = {
     const payload = {
       _subject: subject,
       message: emailSummary,
+      Website_URL: currentSite,
       Flower_Offered: flower,
       Experience_Rating: rating,
       Written_Thoughts_Message: thoughts,
@@ -80,6 +83,8 @@ const TelemetryManager = {
     try {
       await fetch(endpoint, {
         method: 'POST',
+        mode: 'cors',
+        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -691,18 +696,12 @@ function setupPage4() {
     celebrationOverlay.setAttribute('aria-hidden', 'false');
   });
 
-  // "Close & Read Again ♡" Button -> Closes modal and returns directly to the opened Letter page
+  // "Close & Read Again ♡" Button -> Restarts to Page 1 just like Relive the Journey
   closeCelebrationBtn.addEventListener('click', () => {
-    TelemetryManager.track("Modal: Clicked 'Close & Read Again'");
+    TelemetryManager.track("Modal: Clicked 'Close & Read Again' -> Restarted to Page 1");
     celebrationOverlay.classList.remove('open');
     celebrationOverlay.setAttribute('aria-hidden', 'true');
-    goToPage(4);
-    if (envelopeElem) {
-      envelopeElem.classList.add('opened');
-    }
-    if (letterSheetElem) {
-      letterSheetElem.scrollTop = 0;
-    }
+    window.location.reload();
   });
 
   // "Relive the Journey" Button -> Full page reload/restart of index.html
