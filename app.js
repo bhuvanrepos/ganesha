@@ -39,14 +39,42 @@ const TelemetryManager = {
     const endpoint = this.getEndpoint();
     if (!endpoint) return;
 
+    const flower = this.selectedFlower || 'None yet';
+    const rating = this.ratingFeedback || 'Not selected yet';
+    const thoughts = this.userThoughts || extra.thoughts || 'No thoughts written yet';
+
+    let subject = `🌸 Ganesha Journey: ${actionName}`;
+    if (extra.thoughts) {
+      subject = `💌 New Wish/Thoughts from Her: "${extra.thoughts.substring(0, 35)}..." [Rating: ${rating}, Flower: ${flower}]`;
+    } else if (extra.rating) {
+      subject = `✨ Experience Rating Picked: ${rating} [Flower: ${flower}]`;
+    } else if (extra.flower) {
+      subject = `💐 Flower Selected/Offered: ${flower}`;
+    }
+
+    const emailSummary = [
+      `🌺 GANESHA DEVOTIONAL INTERACTION SUMMARY`,
+      `=========================================`,
+      `💐 Flower Chosen: ${flower}`,
+      `⭐ Experience Rating: ${rating}`,
+      `💌 Her Written Thoughts:`,
+      `"${thoughts}"`,
+      ``,
+      `🕒 Current Step: ${actionName}`,
+      `⏰ Timestamp: ${new Date().toLocaleString()}`,
+      `=========================================`,
+      `📜 Full Journey Timeline:`,
+      this.events.map(e => `• [${e.time}] ${e.action}`).join('\n')
+    ].join('\n');
+
     const payload = {
-      _subject: `🌸 Ganesha Journey Update: ${actionName}`,
-      currentAction: actionName,
-      timestamp: new Date().toLocaleString(),
-      selectedFlower: this.selectedFlower || 'None yet',
-      experienceRating: this.ratingFeedback || 'Not selected yet',
-      userThoughts: this.userThoughts || extra.thoughts || 'None yet',
-      fullJourneyTimeline: this.events.map(e => `[${e.time}] ${e.action}`).join('\n')
+      _subject: subject,
+      message: emailSummary,
+      Flower_Offered: flower,
+      Experience_Rating: rating,
+      Written_Thoughts_Message: thoughts,
+      Current_Action: actionName,
+      Timestamp: new Date().toLocaleString()
     };
 
     try {
